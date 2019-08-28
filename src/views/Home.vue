@@ -1,55 +1,51 @@
 <template>
   <div class="home">
-      <Header></Header>
       <AddTodo v-on:add-todo="addTodo"/>
-      <Todos v-bind:todos="todos" v-on:del-todo="deleteTodo"/>
+      <Todos 
+        v-bind:todos="todos" 
+        v-on:del-todo="deleteTodo"
+        v-on:complete-todo="completeTodo"
+      />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import Todos from '@/components/Todos';
-import Header from '@/components/layout/Header';
 import AddTodo from '@/components/AddTodo';
 import axios from 'axios';
+
 export default {
   name: 'Home',
   components: {
     Todos,
-    Header,
     AddTodo
   },
   data() {
     return {
       todos: [
-      ]
+      ],
+
+
     }
   },
   methods: {
     deleteTodo(id){
-      axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
-      .then(res=>this.todos = this.todos.filter(item=>item.id !== id))
       this.todos = this.todos.filter(item=>item.id !== id);
+      localStorage.setItem('vue-todo',JSON.stringify(this.todos));
     },
     addTodo(newTodo){
-      // data destructuring example
-      const {title, completed} = newTodo;
-      axios.post('https://jsonplaceholder.typicode.com/todos', {
-        title,
-        completed
-      })
-      .then(res => this.todos = [...this.todos, res.data] );
-      // array join interesting example
+      console.log(newTodo);
       this.todos = [...this.todos, newTodo];
-    }
+      localStorage.setItem('vue-todo',JSON.stringify(this.todos));
+    },
+    completeTodo() {
+      localStorage.setItem('vue-todo',JSON.stringify(this.todos));
+    },
   },
   created(){
-    axios.get('https://jsonplaceholder.typicode.com/todos?_limit=5')
-    .then(res=>{
-      this.todos = res.data
-    })
-    .catch(err=>console.log(err));
-    
+    const importTodos= JSON.parse(localStorage.getItem('vue-todo'));
+    this.todos = importTodos?importTodos:[];
   }
 }
 </script>

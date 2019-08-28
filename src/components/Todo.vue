@@ -15,6 +15,7 @@ export default {
   methods: {
     markComplete() {
       this.todo.completed = !this.todo.completed;
+      this.$emit('complete-todo');
     },
   }
 }
